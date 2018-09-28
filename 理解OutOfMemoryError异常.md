@@ -5,16 +5,15 @@
 通常`java.lang.OutOfMemoryError`异常表明内存溢出.有如下几种情况:
   * 当GC无法为新对象分配空间,并且无法继续扩展空间时 ...... 通常时这种情况;
   * 当本地内存不足无法加载java class时 ...... 有时会这样;
-  * 当GC执行了很长的时间但是只有一点点内存被释放时 ...... 这种情况极少发生;
+  * 当GC执行了很长的时间但是仅释放了一点点内存时 ...... 这种情况极少发生;
   * 当系统内存不足(比如:交换空间过低)时本地方法`native library code`也会抛出这个异常
 
 抛出`java.lang.OutOfMemoryError`时 **stack trace** 会被打印出来.
 
-发生OutOfMemoryError时我们需要找到异常的原因. 是Java堆满了,或者系统内存堆满了?
-在异常信息的末尾会有些信息帮助我们找到原因, 比如:
+发生OutOfMemoryError时我们需要找到异常的原因. 是Java堆满了,或者系统内存不足了?在异常信息的末尾的信息能帮助我们找到原因, 比如:    
   * **Exception in thread thread_name: java.lang.OutOfMemoryError: Java heap space**   
-    原因: **Java heap space**信息表明堆无法为新对象分配空间, 这个异常通常情况下不说明内存溢出,
-    而是配置的问题, 指定的堆大小或者时默认的大小无法满足应用程序.  
+    原因: **Java heap space**信息表明堆无法为新对象分配空间, 这个异常通常情况下不是表明内存溢出,而是配置的问题,
+    指定的堆大小或者时默认的大小无法满足应用程序.  
     另一种情况是, 在程序运行很长一段时间的情况下,这个异常表明程序中有很多对象无法被GC回收,就是Java
     语言中说的内存溢出.   
     还有一种可能时, 程序大量使用了`finalizers`. 一个类如果实现了**finalize**方法, 那么这个类
@@ -34,7 +33,7 @@
     堆空间大小, 比如: 程序申请512M大小的数组,但是堆大小上限是256M时就会出现这个异常.    
     办法: 通常这种情况是配置问题,配置的空间太少; 或者是程序的BUG.       
 
-  * **Exception in thread thread_name: java.lang.OutOfMemoryError: Metaspace**
+  * **Exception in thread thread_name: java.lang.OutOfMemoryError: Metaspace**    
     原因: java class元信息(JVM内部用来表示Java class的)被分配在系统内存中(这里用元信息`metaspace`表示).      
     如果类的元信息过大,就会出现Metaspace的OutOfMemoryError异常.参数`MaxMetaSpaceSize`用来控制元信息可以使用的
     空间的上限.当需要的内存大小超过`MaxMetaSpaceSize`就会抛OutOfMemoryError异常.      
@@ -42,7 +41,7 @@
     增加MetaSpace空间.     
 
   * **Exception in thread thread_name: java.lang.OutOfMemoryError: request size bytes for reason. Out of swap space?**    
-    原因: 通常在VM向系统申请空间失败时并且系统内存使用接近上限时出现的异常.   
+    原因: 通常在VM向系统申请空间失败并且系统内存使用接近上限时出现的异常.   
     办法: 出现这个异常时,VM会执行错误处理机制,通常会生成一个错误日志文件,里面包含了线程,进程和系统崩溃时间等信息.    
 
   * **Exception in thread thread_name: java.lang.OutOfMemoryError: Compressed class space**    
